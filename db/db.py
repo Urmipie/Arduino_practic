@@ -22,7 +22,6 @@ class DataBase:
 
 if __name__ == "__main__":
     db = DataBase()
-    print(time_ns())
     print('id, time, is_on')
     for i in db.get_all():
         print(i)
