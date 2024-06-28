@@ -7,15 +7,24 @@ class DataBase:
     def __init__(self):
         self.con = sqlite3.connect(path.dirname(__file__) + '\\db.db')
 
-    def get_all(self):
+    def _fetchall(self, query):
         cur = self.con.cursor()
-        fetch = cur.execute("SELECT * FROM status").fetchall()
+        fetch = cur.execute(query).fetchall()
         cur.close()
         return fetch
 
-    def insert(self):
-        cur = self.con.cursor()
+    def get_modes(self):
+        data = self._fetchall("SELECT * FROM modes")
+        for i, row in enumerate(data):
+            data[i] = [row[0]] + list(map(lambda x: (a := str(x).zfill(4))[:2] + ':' + a[2:] if x is not None else "-",
+                                          row[1:]))
+        return data
 
+    def get_history(self):
+        return self._fetchall("SELECT * FROM status")
+
+    def insert_into_history(self):
+        cur = self.con.cursor()
         self.con.commit()
         cur.close()
 
@@ -23,5 +32,5 @@ class DataBase:
 if __name__ == "__main__":
     db = DataBase()
     print('id, time, is_on')
-    for i in db.get_all():
+    for i in db.get_modes():
         print(i)

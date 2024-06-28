@@ -1,2 +1,5 @@
 /db/db.db
 /.venv/
+/test.py
+/test2.py
+/time_dialog.ui

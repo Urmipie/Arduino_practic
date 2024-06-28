@@ -17,10 +17,13 @@ class SerialPort(serial.Serial):
                 port = com_ports[int(input().strip())].device
         print(f"Connecting to: {port}")
         super().__init__(port, speed)
-        print("Connected")
 
-    def readline(self, size: any) -> str:
-        return super().readline(size).decode("utf-8")
+    def readline(self) -> str:
+        data = super().readline()
+        if data:
+            return data.decode().strip()
+        else:
+            return ""
 
     def write(self, text: str):
         super().write(text.encode('utf-8'))

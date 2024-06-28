@@ -1,1 +1,1 @@
-from .MainWindow.MainWindow import MainWindow
+from .ListWidget import ListWidget
