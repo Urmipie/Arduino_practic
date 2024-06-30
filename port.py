@@ -58,9 +58,6 @@ if __name__ == '__main__':
 
     port = SerialPort()
     while True:
-        #port._write('sensorState:;')
-        #port._write(f'setSensorThreshold:100;')
-        #port._write(f'setModeOn:1;')
         try:
             print(port.readline())
         except SerialException:

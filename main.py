@@ -2,12 +2,9 @@ import sys
 import json
 from datetime import datetime
 from os import path
-import sqlite3
-from PyQt5.QtCore import Qt, QTime, QTimer
-from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QTableWidgetItem, QMainWindow, QTimeEdit
+from PyQt5.QtCore import QTime, QTimer
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTimeEdit
 from PyQt5 import uic
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
-
 import Widgets
 from db import db
 from port import SerialPort
@@ -15,6 +12,11 @@ from serial.serialutil import SerialException
 
 
 def get_time(timeEdit: QTimeEdit) -> tuple:
+    """
+    Возвращает введёное в TimeEdit время
+    :param timeEdit: виджет
+    :return: tuple (hour, minute)
+    """
     time = timeEdit.time()
     return time.hour(), time.minute()
 
@@ -22,8 +24,9 @@ def get_time(timeEdit: QTimeEdit) -> tuple:
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi(path.dirname(__file__) + '\\Widgets\\MainWindow2.ui', self)
+        uic.loadUi(path.dirname(__file__) + '\\Widgets\\MainWindow.ui', self)
 
+        # чтение JSON-а и применение настроек из него
         try:
             with open("settings.json", mode='r') as file:
                 settings = json.loads(file.read())
@@ -37,6 +40,7 @@ class MainWindow(QMainWindow):
         except Exception:
             pass
 
+        # подключение сигнальчиков, инициализация объектиков
         self.button_load_mode.clicked.connect(self.load_mode_clicked)
         self.setup_sensor_now.clicked.connect(self.setup_sensor)
         self.button_save_mode.clicked.connect(self.save_mode_clicked)
@@ -45,13 +49,16 @@ class MainWindow(QMainWindow):
         self.db = db.DataBase()
         self.port = self.serial_port_init()
 
+        # создание таймера, который будет вызывать update_cycle
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_cycle)
 
+        # любое изменение параметров ведёт к перенастройке ардуники на ком-порте
         self.radiobutton_turning_on_sensor.toggled.connect(self.port_setup)
         self.radiobutton_turning_off_sensor.toggled.connect(self.port_setup)
         self.timeEdit_on.timeChanged.connect(self.port_setup)
         self.timeEdit_off.timeChanged.connect(self.port_setup)
+
         self.timer.start(1000)
 
     def load_mode_clicked(self):
@@ -92,6 +99,9 @@ class MainWindow(QMainWindow):
         return port
 
     def update_cycle(self):
+        """
+        Функция, котора вызывается по событию таймера, вызывает clock_check и читает данные с порта
+        """
         if self.port is None:
             self.port = self.serial_port_init()
             return
@@ -106,9 +116,11 @@ class MainWindow(QMainWindow):
             print("Connection Lost")
             self.port_disconnection()
             self.port = None
-        # print('---END OF UPDATE CYCLE ---')
 
     def clock_check(self):
+        """
+        Сравнение времени активных timeEdit-ов с текущим временем и выполнение функций при их совпадении
+        """
         on_timer = self.radiobutton_turning_on_time.isChecked()
         off_timer = self.radiobutton_turning_off_time.isChecked()
         setup_timer = self.checkBox_setup_by_time.isChecked()
@@ -133,6 +145,10 @@ class MainWindow(QMainWindow):
                 self.checkBox_setup_by_time.setCheckState(False)
 
     def process_com_answers(self, answer):
+        """
+        Выполняет команды, которые пришли с ком-порта
+        :param answer: Команда формата command<str>:value<int>, двоеточие обязательно, иначе не выполняется
+        """
         if ':' not in answer:
             return
         command, value = answer.split(':')
@@ -142,6 +158,9 @@ class MainWindow(QMainWindow):
             self.label_sensor_state.setText(str(value))
 
     def port_setup(self):
+        """
+        Настраивает ком-порт после подключения, передаёт на него данные из формочки
+        """
         if self.port is not None:
             self.port.set_sensor_threshold(self.spinBox_threshold.value())
             self.port.set_mode_on(self.radiobutton_turning_on_sensor.isChecked())
@@ -156,6 +175,9 @@ class MainWindow(QMainWindow):
             self.spinBox_threshold.setValue(int(threshold))
 
     def closeEvent(self, event):
+        """
+        Эвент закрытия, сохраняет данные в джсончик, откуда их можно будет прочесть при следующем открытии
+        """
         save = {"turn_on": None,
                 "turn_off": None,
                 "sensor_setting": self.spinBox_threshold.value()}
