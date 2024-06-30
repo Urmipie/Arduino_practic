@@ -28,9 +28,22 @@ class DataBase:
         self.con.commit()
         cur.close()
 
+    def add_mode(self, mode: tuple):
+        cur = self.con.cursor()
+        cur.execute('INSERT INTO modes(time_on, time_off) VALUES (?, ?)', mode)
+        self.con.commit()
+        cur.close()
+
+    def delete_mode(self, id):
+        cur = self.con.cursor()
+        cur.execute(f'DELETE FROM modes WHERE ID = {id}')
+        self.con.commit()
+        cur.close()
+
 
 if __name__ == "__main__":
     db = DataBase()
     print('id, time, is_on')
     for i in db.get_modes():
         print(i)
+    # db.delete_mode(2)

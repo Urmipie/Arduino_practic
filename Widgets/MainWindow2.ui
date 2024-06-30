@@ -307,7 +307,7 @@
             <string>По времени</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -318,6 +318,9 @@
           <widget class="QRadioButton" name="radiobutton_turning_off_sensor">
            <property name="text">
             <string>По освещению</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -350,7 +353,7 @@
             <string>По времени</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -361,6 +364,9 @@
           <widget class="QRadioButton" name="radiobutton_turning_on_sensor">
            <property name="text">
             <string>По освещению</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -397,21 +403,21 @@
        <item>
         <layout class="QFormLayout" name="formLayout_6">
          <item row="0" column="0">
-          <widget class="QCheckBox" name="checkBox_2">
+          <widget class="QCheckBox" name="checkBox_setup_by_time">
            <property name="text">
-            <string>Калибровать по времени</string>
+            <string>Настроить по времени</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QTimeEdit" name="timeEdit_6"/>
+          <widget class="QTimeEdit" name="timeEdit_setup"/>
          </item>
         </layout>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_6">
+        <widget class="QPushButton" name="setup_sensor_now">
          <property name="text">
-          <string>Калибровать сейчас</string>
+          <string>Настроить сейчас</string>
          </property>
         </widget>
        </item>
@@ -435,7 +441,7 @@
        <rect>
         <x>10</x>
         <y>260</y>
-        <width>271</width>
+        <width>361</width>
         <height>51</height>
        </rect>
       </property>
@@ -448,7 +454,20 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QSpinBox" name="spinBox_2"/>
+        <widget class="QSpinBox" name="spinBox_threshold">
+         <property name="minimum">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <number>600</number>
+         </property>
+         <property name="stepType">
+          <enum>QAbstractSpinBox::DefaultStepType</enum>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_9">
@@ -458,9 +477,9 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLabel" name="label_10">
+        <widget class="QLabel" name="label_sensor_state">
          <property name="text">
-          <string>100</string>
+          <string>НЕТ ПОДКЛЮЧЕНИЯ</string>
          </property>
         </widget>
        </item>
