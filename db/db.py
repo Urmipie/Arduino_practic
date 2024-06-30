@@ -25,8 +25,8 @@ class DataBase:
         self.con.commit()
         cur.close()
 
-    def delete_mode(self, id):
+    def delete_mode(self, id_):
         cur = self.con.cursor()
-        cur.execute(f'DELETE FROM modes WHERE ID = {id}')
+        cur.execute(f'DELETE FROM modes WHERE ID = {id_}')
         self.con.commit()
         cur.close()
